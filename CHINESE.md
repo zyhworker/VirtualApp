@@ -1,60 +1,62 @@
-[![VA banner](https://raw.githubusercontent.com/asLody/VirtualApp/master/banner.png)](https://github.com/asLody/VirtualApp)
+[![VA banner](https://raw.githubusercontent.com/asLody/VirtualApp/master/Logo.png)](https://github.com/asLody/VirtualApp)
 
-关于
+简介
 ---
-类似`LBE平行空间`， **VirtualApp**是一个**App虚拟引擎**的开源实现。
-VirtualApp在你的App进程内创建一个虚拟空间，你可以在虚拟空间内任意的`安装`、`启动`和`卸载`APK，
-这一切都与外部隔离，就如同一个`沙盒`。VirtualApp亦是一个`插件化框架`，运行在VirtualApp的插件**不需要任何的约束**。
+**VirtualApp**是一个**App虚拟化引擎**（简称`VA`）。
 
-背景
+**VirtualApp已兼容Android 0(8.0 Preview)。**
+
+VirtualApp在你的App内创建一个`虚拟空间`，你可以在虚拟空间内任意的`安装`、`启动`和`卸载`APK，这一切都与外部隔离，如同一个`沙盒`。
+
+运行在`VA`中的APK无需在外部安装，即VA支持**免安装运行APK**。
+
+VA目前被广泛应用于双开/多开，但它决不仅限于此，Android本身就是一个极其开放的平台，免安装运行APK这一Feature打开了太多太多的可能--------这都取决于你的想象力。
+
+申明
 ---
+**您没有权利将VirtualApp的app模块作为您自己的app上架到软件市场，一经发现，后果你懂的。**
 
-VirtualApp最早诞生于2015年初，最早它只是一个简单的插件化框架，但是随着Author对Android Framework层的感悟，
-它最终发展成了一个`虚拟容器`。
+**当您需要将VA用于商业途径时，需要进行授权，因此请务必与作者联系（联系方式见下）。**
 
-讨论技术话题
+
+
+已支持的加固
+----------
+* 360加固
+* 腾讯加固
+* 梆梆加固
+* 爱加密
+* 百度加固
+* 娜迦加固
+* (非VMP的加固都可以通过VA来脱壳，但目前本技术尚不公开)
+
+
+在VA使用Google服务
+-----------
+VA支持运行官方的Google服务套件，同时我们也提供了对`MicroGms`的支持。
+
+您可以通过在VA中安装`MicroGms`来支持`Google服务`，
+
+这样，即使外部没有Google服务，用户也可以在VA中享受Google服务。
+
+MicroGms套件可在此下载：[Download MicroGms](https://microg.org/download.html)
+
+必要模块：
+* Services Core
+* Services Framework Proxy
+* Store
+
+如果您需要在VA中使用官方的Google服务套件（外部已安装的前提下），
+
+则可以通过 `GmsSupport.installGms(userId)` 来安装。
+
+##### 注意，您不能同时安装MicroGms和官方的Gms。
+
+
+使用说明
 ----------
 
-QQ Group: **553070909**
-
-快速开始
-------
-
-1. VirtualApp 使用了 `@hide API`, 
-因此你必须使用我们的 `android.jar` 来替换你已有的那个 **(Android-SDK/platforms/android-23/{android.jar})**. 
-
-2. 在你的 `AndroidManifest.xml` 添加如下代码:
-```xml
-    <permission
-        android:name="com.lody.virtual.permission.VIRTUAL_BROADCAST"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="com.lody.virtual.permission.VIRTUAL_BROADCAST" />
-    <service android:name="com.lody.virtual.client.stub.KeepService" android:process=":x"/>
-    <provider
-            android:process=":x"
-            android:authorities="virtual.service.BinderProvider"
-            android:name="com.lody.virtual.service.BinderProvider"
-            android:exported="false" />
-    <activity
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:name="com.lody.virtual.client.stub.ShortcutHandleActivity" android:exported="true"/>        
-    <activity
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale"
-            android:name="com.lody.virtual.client.stub.StubActivity$C0" android:process=":p0" >
-            <meta-data android:name="X-Identity" android:value="Stub-User"/>
-    </activity>
-    <provider
-            android:process=":p0"
-            android:authorities="virtual.client.stub.StubContentProvider0"
-            android:name="com.lody.virtual.client.stub.StubContentProvider$C0"
-            android:exported="false">
-            <meta-data android:name="X-Identity" android:value="Stub-User"/>
-    </provider>
-    <!--and so on-->
-```
-3. 将你的Host和Plugins需要的**所有权限**加入到你的`AndroidManifest.xml`.
-
-4. 前往你的Application并添加如下代码:
+**前往你的Application并添加如下代码:**
 ```java
     @Override
     protected void attachBaseContext(Context base) {
@@ -65,43 +67,29 @@ QQ Group: **553070909**
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        VirtualCore.getCore().handleApplication(this);
-        if (!VirtualCore.getCore().isVAppProcess()) {
-            // Do some thing...
-        }
-    }
 ```
-
-5. For **Install a virtual App**, use this function:
+**安装App:**
 ```java
     VirtualCore.getCore().installApp({APK PATH}, flags);
 ```
-
-6. For **Launch a virtual App**, use this function:
+**启动App:**
 ```java
     VirtualCore.getCore().launchApp({PackageName});
 ```
-
-7. For **uninstall a virtual App**, use this function:
+**移除App:**
 ```java
     VirtualCore.getCore().uninstallApp({PackageName});
 ```
-
-8. If you need to get the `details of App`, use this function:
+**该App的基本信息:**
 ```java
     VirtualCore.getCore().findApp({PackageName});
 ```
 
-文档
--------------
+License
+-------
+GPL 3.0
 
-VirtualApp 目前暂时**没有文档**，Please read the fucking source code。
-
-关于Author
+技术支持
 ------------
-
-    Lody (imlody@foxmail.com)
+Lody (imlody@foxmail.com)
+QQ/WeChat (382816028)

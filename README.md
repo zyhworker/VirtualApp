@@ -1,14 +1,21 @@
-[![VA banner](https://raw.githubusercontent.com/asLody/VirtualApp/master/banner.png)](https://github.com/asLody/VirtualApp)
+[![VA banner](https://raw.githubusercontent.com/asLody/VirtualApp/master/Logo.png)](https://github.com/asLody/VirtualApp)
 
-[中文](CHINESE.md "中文")
+[中国人猛戳这里](CHINESE.md "中文")
 
 About
 -----
-Likes `LBE Parallel Space`, **VirtualApp** is an open platform for Android that allows you to create a `Virtual Space`,
+**VirtualApp** is an open platform for Android that allows you to create a `Virtual Space`,
 you can install and run apk inside. Beyond that, VirtualApp is also a `Plugin Framework`,
 the plugins running on VirtualApp does not require any constraints.
 VirtualApp does **not** require root, it is running on the `local process`.
 
+NOTICE
+-------
+**This project has been authorized by the business.**
+
+**You are not allowed to modify the app module and put to the software market, if you do that, The consequences you know :)**
+
+**VirtualApp is not free, If you need to use the lib code, please send email to me :)**
 
 Background
 ----------
@@ -18,96 +25,54 @@ But as time goes on,
 the compatibility of it is getting better and better.
 in the end, it evolved into a `Virtual Container`.
 
-Join our group
---------------
-
-QQ Group: **553070909**
-
 
 Get started
 -----------
+If you use latest android studio (version 2.0 or above), please disable `Instant Run`.
+Open `Setting | Build,Exception,Deployment`, and disable `Enable Instant Run to hot swap...`
 
-1. VirtualApp use the `@hide API`, 
-so you must use our `android.jar` replace the old one **(Android-SDK/platforms/android-23/{android.jar})**. 
-
-2. Include the following attributes in your `AndroidManifest.xml`:
-```xml
-    <permission
-        android:name="com.lody.virtual.permission.VIRTUAL_BROADCAST"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="com.lody.virtual.permission.VIRTUAL_BROADCAST" />
-    <service android:name="com.lody.virtual.client.stub.KeepService" android:process=":x"/>
-    <provider
-            android:process=":x"
-            android:authorities="virtual.service.BinderProvider"
-            android:name="com.lody.virtual.service.BinderProvider"
-            android:exported="false" />
-    <activity
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:name="com.lody.virtual.client.stub.ShortcutHandleActivity" android:exported="true"/>        
-    <activity
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale"
-            android:name="com.lody.virtual.client.stub.StubActivity$C0" android:process=":p0" >
-            <meta-data android:name="X-Identity" android:value="Stub-User"/>
-    </activity>
-    <provider
-            android:process=":p0"
-            android:authorities="virtual.client.stub.StubContentProvider0"
-            android:name="com.lody.virtual.client.stub.StubContentProvider$C0"
-            android:exported="false">
-            <meta-data android:name="X-Identity" android:value="Stub-User"/>
-    </provider>
-    <!--and so on-->
-```
-
-3. Add **all permissions** your host and your plugins need to use.
-
-4. Goto your Application and insert the following code:
+**Goto your Application and insert the following code:**
 ```java
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         try {
-            VirtualCore.getCore().startup(base);
+            VirtualCore.get().startup(base);
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        VirtualCore.getCore().handleApplication(this);
-        if (!VirtualCore.getCore().isVAppProcess()) {
-            // Do some thing...
-        }
-    }
 ```
 
-5. For **Install a virtual App**, use this function:
+**Install a virtual App:**
 ```java
-    VirtualCore.getCore().installApp({APK PATH}, flags);
+    VirtualCore.get().installPackage({APK PATH}, flags);
+    
 ```
 
-6. For **Launch a virtual App**, use this function:
+**Launch a virtual App:**
 ```java
-    VirtualCore.getCore().launchApp({PackageName});
+    //VirtualApp support multi-user-mode which can run multiple instances of a same app.
+    //if you don't need this feature, just set `{userId}` to 0.
+    Intent intent = VirtualCore.get().getLaunchIntent({PackageName}, {userId});
+    VActivityManager.get().startActivity(intent, {userId});
 ```
 
-7. For **uninstall a virtual App**, use this function:
+**Uninstall a virtual App:**
 ```java
-    VirtualCore.getCore().uninstallApp({PackageName});
+    VirtualCore.get().uninstallPackage({PackageName});
 ```
 
-8. If you need to get the `details of App`, use this function:
-```java
-    VirtualCore.getCore().findApp({PackageName});
-```
+More details, please read the source code of demo app, :-)
 
 Documentation
 -------------
 
-VirtualApp currently has **no documentation**, If you are interested in VirtualApp,please send email to me.
+VirtualApp currently has **no documentation**, If you are interested in VirtualApp, please send email to me.
+
+License
+-------
+GPL 3.0
 
 About Author
 ------------
